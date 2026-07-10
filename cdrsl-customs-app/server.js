@@ -13,14 +13,22 @@ const upload = multer({ storage: storage }).array('attachments');
 
 app.post('/send-email', upload, (req, res) => {
     const { host, port, user, pass, to, subject, body } = req.body;
-let transporter = nodemailer.createTransport({
+
+    const targetPort = parseInt(port);
+
+    let transporter = nodemailer.createTransport({
         host: host,
-        port: parseInt(port),
-        secure: parseInt(port) === 465, // Will be false for 587
+        port: targetPort,
+        // secure must be false for port 587
+        secure: targetPort === 465, 
         auth: { user: user, pass: pass },
+        // Critical for cloud platforms like Render:
         tls: {
-            rejectUnauthorized: false // Prevents security handshakes from timing out on public cloud servers
-        }
+            rejectUnauthorized: false,
+            minVersion: 'TLSv1.2'
+        },
+        connectionTimeout: 10000, // 10 seconds timeout limit
+        greetingTimeout: 10000
     });
 
     let mailAttachments = [];
@@ -41,6 +49,7 @@ let transporter = nodemailer.createTransport({
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
+            console.error("Nodemailer Error Details:", error);
             return res.status(500).json({ message: 'Transmission Failed: ' + error.message });
         }
         res.status(200).json({ message: 'Email sent successfully! ID: ' + info.messageId });
