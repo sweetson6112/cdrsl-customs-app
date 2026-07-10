@@ -13,12 +13,14 @@ const upload = multer({ storage: storage }).array('attachments');
 
 app.post('/send-email', upload, (req, res) => {
     const { host, port, user, pass, to, subject, body } = req.body;
-
-    let transporter = nodemailer.createTransport({
+let transporter = nodemailer.createTransport({
         host: host,
         port: parseInt(port),
-        secure: parseInt(port) === 465,
-        auth: { user: user, pass: pass }
+        secure: parseInt(port) === 465, // Will be false for 587
+        auth: { user: user, pass: pass },
+        tls: {
+            rejectUnauthorized: false // Prevents security handshakes from timing out on public cloud servers
+        }
     });
 
     let mailAttachments = [];
