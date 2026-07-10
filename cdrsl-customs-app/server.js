@@ -9,7 +9,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
 const storage = multer.memoryStorage();
-const upload = multer.array('attachments'); 
+const upload = multer({ storage: storage }).array('attachments');
 
 app.post('/send-email', upload, (req, res) => {
     const { host, port, user, pass, to, subject, body } = req.body;
