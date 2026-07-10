@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDRSL Customs Report Portal</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .panel { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .full-width { grid-column: span 2; }
+        h2, h3 { color: #1a365d; margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; color: #4a5568; }
+        input, select { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { background-color: #4299e1; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: 600; transition: background 0.2s; width: 100%; }
+        .btn:hover { background-color: #3182ce; }
+        .btn-send { background-color: #38a169; }
+        .btn-send:hover { background-color: #2f855a; }
+        .btn-add { background-color: #4a5568; padding: 8px; margin-top: 5px; font-size: 12px;}
+        .btn-add:hover { background-color: #2d3748; }
+        pre { white-space: pre-wrap; background: #f7fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 14px; margin-top: 5px; }
+        .list-box { background: #f7fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; max-height: 100px; overflow-y: auto; margin-top: 5px; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 3px 0; }
+        .remove-lnk { color: #e53e3e; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .file-input-wrapper { border: 2px dashed #cbd5e0; padding: 15px; border-radius: 6px; text-align: center; background: #fafafa; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="panel full-width">
+        <h2>Customs Monthly Return Portal (CDRSL)</h2>
+    </div>
+
+    <div class="panel">
+        <h3>1. Manage Sender Accounts (From:)</h3>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Add Sender Email</label>
+                <input type="email" id="newSenderEmail" placeholder="officer@cdrsl.com">
+            </div>
+            <div class="form-group">
+                <label>App Password</label>
+                <input type="password" id="newSenderPass" placeholder="••••••••••••">
+            </div>
+        </div>
+        <button class="btn btn-add" onclick="addSenderAddress()">+ Add Sender to List</button>
+        
+        <div class="form-group" style="margin-top: 15px;">
+            <label>Active Sender Profile Selection:</label>
+            <select id="activeSender"></select>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+
+        <h3>2. Mail Server Environment</h3>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>SMTP Host</label>
+                <input type="text" id="smtpHost" value="smtp.gmail.com">
+            </div>
+            <div class="form-group">
+                <label>SMTP Port</label>
+                <input type="number" id="smtpPort" value="465">
+            </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+
+        <h3>3. Customs Recipients (To:)</h3>
+        <div class="form-group">
+            <label>Add Recipient Address</label>
+            <div style="display: flex; gap: 5px;">
+                <input type="email" id="newRecipientEmail" placeholder="customs.zone@gov.in">
+                <button class="btn btn-add" style="margin:0; width: auto;" onclick="addRecipientAddress()">Add</button>
+            </div>
+            <div class="list-box" id="recipientList"></div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3>4. Report Selection & Files</h3>
+        <div class="form-group">
+            <label>Select Report Month (Form A):</label>
+            <select id="reportMonth" onchange="generateEmail()">
+                <option value="2026-04">April 2026</option>
+                <option value="2026-05" selected>May 2026</option>
+                <option value="2026-06">June 2026</option>
+                <option value="2026-07">July 2026</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Attach Reports (Form A & Form B Documents):</label>
+            <div class="file-input-wrapper">
+                <input type="file" id="customsFiles" multiple>
+                <small style="color: #718096; display:block; margin-top:5px;">Select multiple files holding Ctrl / Cmd key</small>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Subject Preview:</label>
+            <pre id="subjectText"></pre>
+        </div>
+        
+        <div class="form-group">
+            <label>Body Preview:</label>
+            <pre id="bodyText" style="max-height: 150px; overflow-y: auto;"></pre>
+        </div>
+
+        <button class="btn btn-send" id="submitBtn" onclick="sendCustomsEmail()">Transmit Report to Customs</button>
+    </div>
+</div>
+
+<script>
+    const monthNamesFull = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    let sendersList = [{ email: "filing@cdrsl.com", pass: "defaultpasstoken" }];
+    let recipientsList = ["customsofficer@domain.gov.in"];
+
+    function initLists() { renderSenders(); renderRecipients(); generateEmail(); }
+
+    function addSenderAddress() {
+        const email = document.getElementById('newSenderEmail').value.trim();
+        const pass = document.getElementById('newSenderPass').value.trim();
+        if(!email || !pass) return alert("Please fill both Email and Password fields.");
+        sendersList.push({ email, pass });
+        document.getElementById('newSenderEmail').value = '';
+        document.getElementById('newSenderPass').value = '';
+        renderSenders();
+    }
+
+    function renderSenders() {
+        const select = document.getElementById('activeSender'); select.innerHTML = '';
+        sendersList.forEach((sender, i) => {
+            let opt = document.createElement('option'); opt.value = i; opt.innerText = sender.email; select.appendChild(opt);
+        });
+    }
+
+    function addRecipientAddress() {
+        const email = document.getElementById('newRecipientEmail').value.trim();
+        if(!email) return;
+        recipientsList.push(email); document.getElementById('newRecipientEmail').value = '';
+        renderRecipients();
+    }
+
+    function removeRecipient(index) { recipientsList.splice(index, 1); renderRecipients(); }
+
+    function renderRecipients() {
+        const container = document.getElementById('recipientList'); container.innerHTML = '';
+        recipientsList.forEach((email, i) => {
+            container.innerHTML += `<div class="list-item"><span>${email}</span><span class="remove-lnk" onclick="removeRecipient(${i})">Remove</span></div>`;
+        });
+    }
+
+    function generateEmail() {
+        const selectValue = document.getElementById("reportMonth").value;
+        const [yearStr, monthStr] = selectValue.split("-");
+        let yearA = parseInt(yearStr), monthA = parseInt(monthStr);
+        let monthB = monthA + 1, yearB = yearA; if (monthB > 11) { monthB = 0; yearB += 1; }
+        const fullMonthA = monthNamesFull[monthA], shortYearA = String(yearA).slice(-2);
+        const fullMonthB = monthNamesFull[monthB], shortYearB = String(yearB).slice(-2);
+
+        document.getElementById("subjectText").innerText = `Cochin Dutyfree (CDRSL) Form A & B - Submission - ${fullMonthA} ${yearA}`;
+        document.getElementById("bodyText").innerText = `Respected Sir,\n\nSub: Filing of monthly return in relation to warehoused goods –Reg:\nRef: Customs circular No.32/2016 dated 13/07/’16\n\nCIAL DUTYFREE AND RETAIL SERVICES LTD.(CDRSL) is maintaining electronic records of receipts, handling, storage and removal of the warehoused goods as per Circular No.32/2016 dated 13/07/’16.\n\nPlease find attached the Digital form of records of receipt, handling, storage and removal of the warehoused goods for the period ${fullMonthA} '${shortYearA} in Form A and details of goods stored in the warehouse of which bond validity expiring in the month of ${fullMonthB} '${shortYearB} in Form-B.\n\nThanking You,\nYours truly,\nTeam CDRSL`;
+    }
+
+    async function sendCustomsEmail() {
+        const activeIdx = document.getElementById('activeSender').value;
+        const fileInput = document.getElementById('customsFiles');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if(!activeIdx || recipientsList.length === 0) return alert('Ensure Sender profile and Recipient rules are set.');
+        if(fileInput.files.length === 0) return alert('Please attach Form A and Form B files.');
+
+        submitBtn.innerText = "Transmitting... Please Wait";
+        submitBtn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('host', document.getElementById('smtpHost').value);
+        formData.append('port', document.getElementById('smtpPort').value);
+        formData.append('user', sendersList[activeIdx].email);
+        formData.append('pass', sendersList[activeIdx].pass);
+        formData.append('to', recipientsList.join(', '));
+        formData.append('subject', document.getElementById('subjectText').innerText);
+        formData.append('body', document.getElementById('bodyText').innerText);
+
+        for (let i = 0; i < fileInput.files.length; i++) {
+            formData.append('attachments', fileInput.files[i]);
+        }
+
+        try {
+            const response = await fetch('/send-email', { method: 'POST', body: formData });
+            const result = await response.json();
+            alert(result.message);
+        } catch (error) {
+            alert('Failed to connect to web mail engine.');
+        } finally {
+            submitBtn.innerText = "Transmit Report to Customs";
+            submitBtn.disabled = false;
+        }
+    }
+    window.onload = initLists;
+</script>
+</body>
+</html>
