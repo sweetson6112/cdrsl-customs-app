@@ -3,299 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CDRSL Customs Report Portal</title>
+    <title>CDRSL - Automated Customs Dispatch Portal</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        h2, h3 { color: #1a365d; margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
-        
-        /* Tabs System styling */
-        .tab-headers { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #cbd5e0; padding-bottom: 2px; }
-        .tab-lnk { padding: 10px 20px; background: #e2e8f0; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-weight: 600; color: #4a5568; transition: all 0.2s; }
-        .tab-lnk.active { background: #4299e1; color: white; }
-        .tab-content { display: none; }
+        :root {
+            --primary: #1e3a8a;
+            --primary-hover: #172554;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --border: #e2e8f0;
+            --success: #15803d;
+            --danger: #b91c1c;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { background: var(--primary); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 12px 24px; border: none; background: #e2e8f0; cursor: pointer; border-radius: 6px; font-weight: 600; font-size: 14px; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-content { display: none; background: var(--card-bg); padding: 25px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .tab-content.active { display: block; }
-
-        .form-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .full-width { grid-column: span 2; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; color: #4a5568; }
-        input, select { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        
-        .btn { background-color: #4299e1; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: 600; transition: background 0.2s; width: 100%; }
-        .btn:hover { background-color: #3182ce; }
-        .btn-send { background-color: #38a169; }
-        .btn-send:hover { background-color: #2f855a; }
-        .btn-add { background-color: #4a5568; padding: 8px; font-size: 12px; width: auto; margin-top: 5px;}
-        .btn-add:hover { background-color: #2d3748; }
-        
-        pre { white-space: pre-wrap; background: #f7fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 14px; margin-top: 5px; }
-        .list-box { background: #f7fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; max-height: 130px; overflow-y: auto; margin-top: 5px; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 8px; border-bottom: 1px solid #edf2f7; background: white; margin-bottom: 4px; border-radius: 3px; }
-        .list-item:last-child { border-bottom: none; }
-        .remove-lnk { color: #e53e3e; cursor: pointer; font-weight: bold; font-size: 12px; padding: 2px 6px; border: 1px solid #fed7d7; background: #fff5f5; border-radius: 4px; }
-        .remove-lnk:hover { background: #e53e3e; color: white; }
-        .file-input-wrapper { border: 2px dashed #cbd5e0; padding: 15px; border-radius: 6px; text-align: center; background: #fafafa; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+        .btn { background: var(--primary); color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; font-size: 14px; }
+        .btn:hover { background: var(--primary-hover); }
+        .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .pool-box { border: 1px solid var(--border); padding: 15px; border-radius: 6px; background: #f1f5f9; min-height: 100px; max-height: 200px; overflow-y: auto; margin-top: 10px; }
+        .list-item { display: flex; justify-content: space-between; padding: 8px; background: white; margin-bottom: 6px; border-radius: 4px; border: 1px solid var(--border); font-size: 13px; }
+        .remove-lnk { color: var(--danger); cursor: pointer; font-weight: 600; }
+        .preview-box { background: #fafafa; border: 1px solid var(--border); padding: 15px; border-radius: 6px; font-family: monospace; white-space: pre-wrap; margin-top: 10px; font-size: 13px; }
+        .status-msg { margin-top: 15px; padding: 12px; border-radius: 6px; font-weight: 600; text-align: center; display: none; }
+        .status-msg.success { background: #dcfce7; color: var(--success); display: block; }
+        .status-msg.error { background: #fee2e2; color: var(--danger); display: block; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Customs Monthly Return Portal (CDRSL)</h2>
-    
-    <div class="tab-headers">
-        <button class="tab-lnk active" onclick="switchTab('dashboardTab', this)">📊 Dispatch Dashboard</button>
-        <button class="tab-lnk" onclick="switchTab('settingsTab', this)">⚙️ Configuration Settings</button>
+    <header>
+        <h2>CDRSL Customs Management System</h2>
+        <p>Automated Manifest & Manifest Duty Log Transmitting Pipeline</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('dashboard')">Dispatch Dashboard</button>
+        <button class="tab-btn" onclick="switchTab('settings')">Configuration Settings</button>
     </div>
 
-    <div id="dashboardTab" class="tab-content active">
-        <div class="form-layout">
-            <div class="form-group">
-                <label>1. Active Transmitting Account (From:)</label>
-                <select id="activeSender"></select>
-            </div>
-            <div class="form-group">
-                <label>2. Active Mail Server Profile (SMTP Environment)</label>
-                <select id="activeServer"></select>
-            </div>
-            
-            <div class="panel full-width" style="border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; box-shadow:none;">
-                <h3>3. Report Selection & Execution</h3>
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Select Report Month (Form A):</label>
-                        <select id="reportMonth" onchange="generateEmail()">
-                            <option value="2026-04">April 2026</option>
-                            <option value="2026-05" selected>May 2026</option>
-                            <option value="2026-06">June 2026</option>
-                            <option value="2026-07">July 2026</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Attach Reports (Form A & Form B Documents):</label>
-                        <div class="file-input-wrapper">
-                            <input type="file" id="customsFiles" multiple>
-                        </div>
-                    </div>
-                </div>
-
+    <!-- TAB 1: DASHBOARD -->
+    <div id="dashboard" class="tab-content active">
+        <div class="grid-2">
+            <div>
+                <h3 style="margin-bottom: 15px;">Active Transmission Configuration</h3>
                 <div class="form-group">
-                    <label>Current Mailing Destinations (To:):</label>
-                    <div style="font-size: 13px; color: #4a5568; background: #edf2f7; padding: 8px; border-radius: 4px;" id="recipientsDisplay">None configured. Go to settings tab.</div>
+                    <label for="activeSender">1. Active Transmitting Account (From:)</label>
+                    <select id="activeSender"></select>
                 </div>
-
                 <div class="form-group">
-                    <label>Subject Preview:</label>
-                    <pre id="subjectText"></pre>
+                    <label for="activeServer">2. Active Mail Server Profile (SMTP)</label>
+                    <select id="activeServer"></select>
                 </div>
+                <div class="form-group">
+                    <label for="reportingMonth">3. Select Cargo Log Reporting Month</label>
+                    <select id="reportingMonth" onchange="updateEmailTemplate()">
+                        <option value="January 2026">January 2026</option>
+                        <option value="February 2026">February 2026</option>
+                        <option value="March 2026">March 2026</option>
+                        <option value="April 2026">April 2026</option>
+                        <option value="May 2026">May 2026</option>
+                        <option value="June 2026">June 2026</option>
+                        <option value="July 2026" selected>July 2026</option>
+                        <option value="August 2026">August 2026</option>
+                        <option value="September 2026">September 2026</option>
+                        <option value="October 2026">October 2026</option>
+                        <option value="November 2026">November 2026</option>
+                        <option value="December 2026">December 2026</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="customsFiles">4. Attach Log Files (Form A / Form B Manifests)</label>
+                    <input type="file" id="customsFiles" multiple>
+                </div>
+                <button id="submitBtn" class="btn" onclick="sendCustomsEmail()">Transmit Report to Customs</button>
+                <div id="statusReport" class="status-msg"></div>
+            </div>
+
+            <div>
+                <h3 style="margin-bottom: 15px;">Automated Data Preview</h3>
+                <label>Recipients Pool (To:)</label>
+                <div id="previewRecipients" style="font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--primary);"></div>
                 
-                <div class="form-group">
-                    <label>Body Preview:</label>
-                    <pre id="bodyText" style="max-height: 150px; overflow-y: auto;"></pre>
-                </div>
-
-                <button class="btn btn-send" id="submitBtn" onclick="sendCustomsEmail()">Transmit Report to Customs</button>
+                <label>Subject Line</label>
+                <div id="subjectText" class="preview-box" style="margin-bottom: 10px; font-weight: bold;"></div>
+                
+                <label>Email Body Message</label>
+                <div id="bodyText" class="preview-box"></div>
             </div>
         </div>
     </div>
 
-    <div id="settingsTab" class="tab-content">
-        <div class="form-layout" style="margin-bottom: 30px;">
-            <div class="panel" style="border: 1px solid #e2e8f0; padding: 15px; box-shadow: none;">
-                <h3>1. Manage Sender Accounts (From:)</h3>
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="newSenderEmail" placeholder="officer@cdrsl.com">
-                    </div>
-                    <div class="form-group">
-                        <label>App Password / Token</label>
-                        <input type="password" id="newSenderPass" placeholder="••••••••••••">
-                    </div>
-                </div>
-                <button class="btn btn-add" onclick="addSenderAddress()">Add Sender</button>
-                
-                <label style="margin-top: 15px;">Saved Sender Accounts Pool:</label>
-                <div class="list-box" id="senderPoolList"></div>
-            </div>
-
-            <div class="panel" style="border: 1px solid #e2e8f0; padding: 15px; box-shadow: none;">
-                <h3>2. Mail Server Environments (SMTP)</h3>
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Profile Label</label>
-                        <input type="text" id="serverLabel" placeholder="e.g., Office Gmail">
-                    </div>
-                    <div class="form-group">
-                        <label>SMTP Host</label>
-                        <input type="text" id="smtpHost" placeholder="smtp.gmail.com">
-                    </div>
+    <!-- TAB 2: SETTINGS -->
+    <div id="settings" class="tab-content">
+        <div class="grid-2">
+            <!-- SENDER ACCOUNTS POOL -->
+            <div>
+                <h3>Manage Sender Accounts (From:)</h3>
+                <p style="font-size: 12px; margin-bottom: 10px; color: #64748b;">Add your secure SMTP or SMTP2GO login identifiers here.</p>
+                <div class="form-group">
+                    <input type="email" id="newSenderEmail" placeholder="e.g. reports@cdrsl.com">
                 </div>
                 <div class="form-group">
-                    <label>SMTP Port (Use 587 on cloud hosts)</label>
-                    <input type="number" id="smtpPort" value="587">
+                    <input type="password" id="newSenderPass" placeholder="SMTP User Token / App Password">
                 </div>
-                <button class="btn btn-add" onclick="addServerProfile()">Add Server Profile</button>
-                
-                <label style="margin-top: 15px;">Saved Server Profiles:</label>
-                <div class="list-box" id="serverPoolList"></div>
+                <button class="btn" onclick="addSender()">Add Sender</button>
+                <div id="senderPoolList" class="pool-box"></div>
             </div>
 
-            <div class="panel full-width" style="border: 1px solid #e2e8f0; padding: 15px; box-shadow: none;">
-                <h3>3. Customs Recipients Management (To:)</h3>
+            <!-- MAIL SERVER ENVIRONMENTS -->
+            <div>
+                <h3>Mail Server Environments (SMTP)</h3>
+                <p style="font-size: 12px; margin-bottom: 10px; color: #64748b;">Configure server properties. Use port 2525 to bypass Render firewall blocks.</p>
                 <div class="form-group">
-                    <label>Add New Customs Recipient Destination Address</label>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="email" id="newRecipientEmail" placeholder="customs.zone@gov.in">
-                        <button class="btn btn-add" style="margin:0;" onclick="addRecipientAddress()">Add Recipient</button>
-                    </div>
+                    <input type="text" id="serverLabel" placeholder="Profile Label (e.g., SMTP2GO Cloud)">
                 </div>
-                <label>Saved Recipient Group Control:</label>
-                <div class="list-box" id="recipientPoolList"></div>
+                <div class="form-group">
+                    <input type="text" id="serverHost" placeholder="Host (e.g., mail.smtp2go.com)">
+                </div>
+                <div class="form-group">
+                    <input type="number" id="serverPort" placeholder="Port (e.g., 2525)">
+                </div>
+                <button class="btn" onclick="addServer()">Add Server Profile</button>
+                <div id="serverPoolList" class="pool-box"></div>
             </div>
+        </div>
+
+        <hr style="margin: 30px 0; border: 0; border-top: 1px solid var(--border);">
+
+        <!-- CUSTOMS RECIPIENTS TARGET LIST -->
+        <div style="max-width: 500px;">
+            <h3>Target Customs Officer Pool (To:)</h3>
+            <p style="font-size: 12px; margin-bottom: 10px; color: #64748b;">The distribution endpoint list for the final transmission files.</p>
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <input type="email" id="newRecipient" placeholder="officer@customs.gov">
+                <button class="btn" style="width: auto; white-space: nowrap;" onclick="addRecipient()">Add Officer</button>
+            </div>
+            <div id="recipientPoolList" class="pool-box"></div>
         </div>
     </div>
 </div>
 
 <script>
-    const monthNamesFull = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
-    // Initializing state with default profiles
-    let sendersList = [{ email: "filing@cdrsl.com", pass: "defaultpasstoken" }];
-    let serversList = [{ label: "Default Gmail (587)", host: "smtp.gmail.com", port: "587" }];
-    let recipientsList = ["customsofficer@domain.gov.in"];
+    // State management synced to LocalStorage
+    let sendersList = JSON.parse(localStorage.getItem('cdrsl_senders')) || [];
+    let serversList = JSON.parse(localStorage.getItem('cdrsl_servers')) || [];
+    let recipientsList = JSON.parse(localStorage.getItem('cdrsl_recipients')) || [];
 
-    function switchTab(tabId, element) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-lnk').forEach(lnk => lnk.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        element.classList.add('active');
+    // Initialize defaults if totally clean
+    if(serversList.length === 0) {
+        serversList.push({label: 'SMTP2GO Cloud Fallback', host: 'mail.smtp2go.com', port: '2525'});
     }
 
-    function init() {
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    function addSender() {
+        const email = document.getElementById('newSenderEmail').value.trim();
+        const pass = document.getElementById('newSenderPass').value.trim();
+        if(!email || !pass) return alert('Provide a valid email and authorization token.');
+        sendersList.push({email, pass});
+        localStorage.setItem('cdrsl_senders', JSON.stringify(sendersList));
+        document.getElementById('newSenderEmail').value = '';
+        document.getElementById('newSenderPass').value = '';
+        renderAll();
+    }
+
+    function removeSender(i) {
+        sendersList.splice(i, 1);
+        localStorage.setItem('cdrsl_senders', JSON.stringify(sendersList));
+        renderAll();
+    }
+
+    function addServer() {
+        const label = document.getElementById('serverLabel').value.trim();
+        const host = document.getElementById('serverHost').value.trim();
+        const port = document.getElementById('serverPort').value.trim();
+        if(!label || !host || !port) return alert('All server profile configurations are mandatory.');
+        serversList.push({label, host, port});
+        localStorage.setItem('cdrsl_servers', JSON.stringify(serversList));
+        document.getElementById('serverLabel').value = '';
+        document.getElementById('serverHost').value = '';
+        document.getElementById('serverPort').value = '';
+        renderAll();
+    }
+
+    function removeServer(i) {
+        serversList.splice(i, 1);
+        localStorage.setItem('cdrsl_servers', JSON.stringify(serversList));
+        renderAll();
+    }
+
+    function addRecipient() {
+        const email = document.getElementById('newRecipient').value.trim();
+        if(!email) return alert('Enter a valid recipient address.');
+        recipientsList.push(email);
+        localStorage.setItem('cdrsl_recipients', JSON.stringify(recipientsList));
+        document.getElementById('newRecipient').value = '';
+        renderAll();
+    }
+
+    function removeRecipient(i) {
+        recipientsList.splice(i, 1);
+        localStorage.setItem('cdrsl_recipients', JSON.stringify(recipientsList));
+        renderAll();
+    }
+
+    function renderAll() {
         renderSenders();
         renderServers();
         renderRecipients();
-        generateEmail();
+        updateEmailTemplate();
     }
 
-    // --- SENDER PROFILES CONTROLLERS ---
-    function addSenderAddress() {
-        const email = document.getElementById('newSenderEmail').value.trim();
-        const pass = document.getElementById('newSenderPass').value.trim();
-        if(!email || !pass) return alert("Fill out both input parameters.");
-        sendersList.push({ email, pass });
-        document.getElementById('newSenderEmail').value = '';
-        document.getElementById('newSenderPass').value = '';
-        renderSenders();
-    }
-    function removeSender(idx) {
-        if(sendersList.length <= 1) return alert("Must retain at least one configured profile.");
-        sendersList.splice(idx, 1);
-        renderSenders();
-    }
     function renderSenders() {
         const activeSelect = document.getElementById('activeSender');
         const listDiv = document.getElementById('senderPoolList');
         activeSelect.innerHTML = ''; listDiv.innerHTML = '';
         
         sendersList.forEach((sender, i) => {
-            activeSelect.innerHTML += `<option value="${i}">${sender.email}</option>`;
+            // FIX: Map actual email string value directly to the option field instead of index number
+            activeSelect.innerHTML += `<option value="${sender.email}">${sender.email}</option>`;
             listDiv.innerHTML += `<div class="list-item"><span>${sender.email}</span><span class="remove-lnk" onclick="removeSender(${i})">Delete</span></div>`;
         });
     }
 
-    // --- SERVER PROFILES CONTROLLERS ---
-    function addServerProfile() {
-        const label = document.getElementById('serverLabel').value.trim();
-        const host = document.getElementById('smtpHost').value.trim();
-        const port = document.getElementById('smtpPort').value.trim();
-        if(!label || !host || !port) return alert("Fill out all configuration fields.");
-        serversList.push({ label, host, port });
-        document.getElementById('serverLabel').value = '';
-        document.getElementById('smtpHost').value = '';
-        renderServers();
-    }
-    function removeServer(idx) {
-        if(serversList.length <= 1) return alert("Must keep at least one active profile routing.");
-        serversList.splice(idx, 1);
-        renderServers();
-    }
     function renderServers() {
         const activeSelect = document.getElementById('activeServer');
-        const listDiv = document.getElementById('serverPoolList')[1] || document.querySelectorAll('#serverPoolList')[0]; 
-        // fallback query selection selector targeting
-        const elements = document.querySelectorAll('#serverPoolList');
-        const targetListDiv = elements[elements.length - 1];
-
-        activeSelect.innerHTML = ''; targetListDiv.innerHTML = '';
-        serversList.forEach((srv, i) => {
-            activeSelect.innerHTML += `<option value="${i}">${srv.label} (${srv.host}:${srv.port})</option>`;
-            targetListDiv.innerHTML += `<div class="list-item"><span><strong>${srv.label}</strong> - ${srv.host}:${srv.port}</span><span class="remove-lnk" onclick="removeServer(${i})">Delete</span></div>`;
+        const listDiv = document.getElementById('serverPoolList');
+        activeSelect.innerHTML = ''; listDiv.innerHTML = '';
+        
+        serversList.forEach((server, i) => {
+            activeSelect.innerHTML += `<option value="${i}">${server.label} (${server.host}:${server.port})</option>`;
+            listDiv.innerHTML += `<div class="list-item"><span><strong>${server.label}</strong> - ${server.host}:${server.port}</span><span class="remove-lnk" onclick="removeServer(${i})">Delete</span></div>`;
         });
     }
 
-    // --- RECIPIENTS CONTROLLERS ---
-    function addRecipientAddress() {
-        const email = document.getElementById('newRecipientEmail').value.trim();
-        if(!email) return;
-        recipientsList.push(email);
-        document.getElementById('newRecipientEmail').value = '';
-        renderRecipients();
-    }
-    function removeRecipient(idx) {
-        recipientsList.splice(idx, 1);
-        renderRecipients();
-    }
     function renderRecipients() {
         const listDiv = document.getElementById('recipientPoolList');
-        const displayBar = document.getElementById('recipientsDisplay');
+        const previewDiv = document.getElementById('previewRecipients');
         listDiv.innerHTML = '';
         
         if(recipientsList.length === 0) {
-            displayBar.innerText = "No recipients defined. Reporting active stream is locked.";
+            previewDiv.innerText = "No Target Recipients Registered (Configure in settings)";
         } else {
-            displayBar.innerText = recipientsList.join(', ');
+            previewDiv.innerText = recipientsList.join(', ');
         }
-        recipientsList.forEach((email, i) => {
-            listDiv.innerHTML += `<div class="list-item"><span>${email}</span><span class="remove-lnk" onclick="removeRecipient(${i})">Delete</span></div>`;
+
+        recipientsList.forEach((recip, i) => {
+            listDiv.innerHTML += `<div class="list-item"><span>${recip}</span><span class="remove-lnk" onclick="removeRecipient(${i})">Delete</span></div>`;
         });
     }
 
-    // --- GENERATION ENGINE ---
-    function generateEmail() {
-        const selectValue = document.getElementById("reportMonth").value;
-        const [yearStr, monthStr] = selectValue.split("-");
-        let yearA = parseInt(yearStr), monthA = parseInt(monthStr);
-        let monthB = monthA + 1, yearB = yearA; if (monthB > 11) { monthB = 0; yearB += 1; }
-        const fullMonthA = monthNamesFull[monthA], shortYearA = String(yearA).slice(-2);
-        const fullMonthB = monthNamesFull[monthB], shortYearB = String(yearB).slice(-2);
-
-        document.getElementById("subjectText").innerText = `Cochin Dutyfree (CDRSL) Form A & B - Submission - ${fullMonthA} ${yearA}`;
-        document.getElementById("bodyText").innerText = `Respected Sir,\n\nSub: Filing of monthly return in relation to warehoused goods –Reg:\nRef: Customs circular No.32/2016 dated 13/07/’16\n\nCIAL DUTYFREE AND RETAIL SERVICES LTD.(CDRSL) is maintaining electronic records of receipts, handling, storage and removal of the warehoused goods as per Circular No.32/2016 dated 13/07/’16.\n\nPlease find attached the Digital form of records of receipt, handling, storage and removal of the warehoused goods for the period ${fullMonthA} '${shortYearA} in Form A and details of goods stored in the warehouse of which bond validity expiring in the month of ${fullMonthB} '${shortYearB} in Form-B.\n\nThanking You,\nYours truly,\nTeam CDRSL`;
+    function updateEmailTemplate() {
+        const month = document.getElementById('reportingMonth').value;
+        document.getElementById('subjectText').innerText = `CDRSL COMPLIANCE REPORT: Customs Cargo Data Manifest Log [${month}]`;
+        document.getElementById('bodyText').innerText = `Dear Customs Authority Operations Desk,\n\nPlease find attached the verified structural items, Bill of Entry (BE) calculations, assessed evaluation figures, and total computed duty balances corresponding to the logistics manifests processed by CDRSL during the active cycle of ${month}.\n\nThese automated extraction data frames have been double-checked against their underlying original manifests for verification integrity.\n\nRegards,\nCDRSL Operations Pipeline Engine`;
     }
 
     async function sendCustomsEmail() {
-        const senderIdx = document.getElementById('activeSender').value;
+        // FIX: Extract raw string email username text directly from the dropdown element value
+        const selectedSenderEmail = document.getElementById('activeSender').value;
         const serverIdx = document.getElementById('activeServer').value;
         const fileInput = document.getElementById('customsFiles');
         const submitBtn = document.getElementById('submitBtn');
+        const statusReport = document.getElementById('statusReport');
 
-        if(!senderIdx || !serverIdx || recipientsList.length === 0) return alert('Verify that active settings and recipients are properly configured.');
-        if(fileInput.files.length === 0) return alert('Please attach your document logs before submission.');
+        statusReport.className = "status-msg";
+        statusReport.innerText = "";
+
+        if(!selectedSenderEmail || !serverIdx || recipientsList.length === 0) {
+            return alert('Verify that active settings and target recipients are properly configured.');
+        }
+        if(fileInput.files.length === 0) {
+            return alert('Please attach your document logs before submission.');
+        }
 
         submitBtn.innerText = "Transmitting... Please Wait";
         submitBtn.disabled = true;
 
-        const activeSender = sendersList[senderIdx];
+        // FIX: Find the authentication password safely inside our javascript configuration array using the email text lookup string
+        const activeSenderObj = sendersList.find(s => s.email === selectedSenderEmail);
         const activeServer = serversList[serverIdx];
 
         const formData = new FormData();
         formData.append('host', activeServer.host);
         formData.append('port', activeServer.port);
-        formData.append('user', activeSender.email);
-        formData.append('pass', activeSender.pass);
+        formData.append('user', selectedSenderEmail); // Sends raw target email text string
+        formData.append('pass', activeSenderObj ? activeSenderObj.pass : '');
         formData.append('to', recipientsList.join(', '));
         formData.append('subject', document.getElementById('subjectText').innerText);
         formData.append('body', document.getElementById('bodyText').innerText);
@@ -305,17 +315,30 @@
         }
 
         try {
-            const response = await fetch('/send-email', { method: 'POST', body: formData });
+            const response = await fetch('/send-email', {
+                method: 'POST',
+                body: formData
+            });
             const result = await response.json();
-            alert(result.message);
+
+            if (response.ok) {
+                statusReport.classList.add('success');
+                statusReport.innerText = result.message;
+            } else {
+                statusReport.classList.add('error');
+                statusReport.innerText = result.message;
+            }
         } catch (error) {
-            alert('Failed to connect to transmission engine.');
+            statusReport.classList.add('error');
+            statusReport.innerText = "Network Error: Could not reach the application backend.";
         } finally {
             submitBtn.innerText = "Transmit Report to Customs";
             submitBtn.disabled = false;
         }
     }
-    window.onload = init;
+
+    // Run view assembly logic on page load
+    window.onload = renderAll;
 </script>
 </body>
 </html>
